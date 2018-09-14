@@ -13,6 +13,10 @@ public class IoCContextImpl implements IoCContext {
             throw new IllegalArgumentException(beanClazz.getName() + IS_ABSTRACT);
         } else if (beanClazz.getConstructor() == null) {
             throw new IllegalArgumentException(beanClazz.getName() + HAS_NO_DEFAULT_CONSTRUCTOR);
+        } else if (true){
+            return;
+        } else {
+
         }
     }
 

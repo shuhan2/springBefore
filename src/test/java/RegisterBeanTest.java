@@ -1,9 +1,11 @@
-import org.junit.jupiter.api.BeforeEach;
+import TestClass.AbstractClass;
+import TestClass.ValidClass;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-class IoCContextImplTest {
+class RegisterBeanTest {
 
     private static final String ABSTRACT_CLASS_IS_ABSTRACT = "AbstractClass is abstract.";
 
@@ -15,7 +17,7 @@ class IoCContextImplTest {
             context.registerBean(null);
         } catch (Exception exception) {
             assertEquals(IoCContextImpl.BEAN_CLAZZ_IS_MANDATORY,exception.getMessage());
-            assertEquals(null,exception.getCause());
+            assertNull(exception.getCause());
             assertEquals(IllegalArgumentException.class,exception.getClass());
         }
 
@@ -43,4 +45,15 @@ class IoCContextImplTest {
         }
 
     }
+
+    @Test
+    void should_return_with_no_error_when_Class_has_been_registered() throws NoSuchMethodException {
+        try {
+            context.registerBean(ValidClass.class);
+            context.registerBean(ValidClass.class);
+        } catch (Exception exception){
+            assertNull(exception);
+        }
+    }
+
 }
