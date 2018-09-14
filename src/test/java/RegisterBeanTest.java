@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RegisterBeanTest {
 
@@ -47,13 +48,30 @@ class RegisterBeanTest {
     }
 
     @Test
-    void should_return_with_no_error_when_Class_has_been_registered() throws NoSuchMethodException {
+    void should_return_with_no_error_when_Class_has_been_registered()  {
+
         try {
             context.registerBean(ValidClass.class);
+            int beforeLength = IoCContextImpl.classList.size();
             context.registerBean(ValidClass.class);
-        } catch (Exception exception){
-            assertNull(exception);
+            int afterLength = IoCContextImpl.classList.size();
+
+            assertEquals(beforeLength,afterLength);
+        } catch (NoSuchMethodException exception) {
+            exception.printStackTrace();
         }
+
     }
+
+    @Test
+    void should_throw_IllegalArgumentException_with_message_when_getBean_null()  {
+        assertThrows(IllegalArgumentException.class, ()->context.getBean(null));
+    }
+
+    @Test
+    void should_throw_IllegalArgumentException_when_getBean_Class_not_been_registered() {
+        assertThrows(IllegalArgumentException.class, () -> context.getBean(ValidClass.class));
+    }
+
 
 }
