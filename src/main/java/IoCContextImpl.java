@@ -20,11 +20,10 @@ public class IoCContextImpl implements IoCContext,Cloneable {
             throw new IllegalArgumentException(beanClazz.getName() + IS_ABSTRACT);
         }
         try {
-            if (beanClazz.getDeclaredConstructor() == null) {
-                throw new IllegalArgumentException(beanClazz.getName() + HAS_NO_DEFAULT_CONSTRUCTOR);
-            }
+            beanClazz.getConstructor();
         } catch (NoSuchMethodException exception) {
-            exception.printStackTrace();
+            throw new IllegalArgumentException(beanClazz.getName() + HAS_NO_DEFAULT_CONSTRUCTOR);
+
         }
 
         if (getBeanList.indexOf(beanClazz) > -1) {
@@ -37,6 +36,19 @@ public class IoCContextImpl implements IoCContext,Cloneable {
 
     @Override
     public <T> void registerBean(Class<? super T> resolveClazz, Class<T> beanClazz)  {
+        if (resolveClazz == null || beanClazz == null ) {
+            throw new IllegalArgumentException(BEAN_CLAZZ_IS_MANDATORY);
+        }
+        if (beanClazz.isInterface() || Modifier.isAbstract(beanClazz.getModifiers())) {
+            throw new IllegalArgumentException(beanClazz.getName() + IS_ABSTRACT);
+        }
+        try {
+            beanClazz.getConstructor();
+
+        } catch (NoSuchMethodException exception) {
+            throw new IllegalArgumentException(beanClazz.getName() + HAS_NO_DEFAULT_CONSTRUCTOR);
+        }
+
 
     }
 

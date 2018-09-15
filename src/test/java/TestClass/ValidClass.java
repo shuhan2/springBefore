@@ -1,6 +1,6 @@
 package TestClass;
 
-public class ValidClass {
+public class ValidClass extends SuperValidClass {
 
     public ValidClass() {
     }

@@ -1,4 +1,4 @@
 package TestClass;
 
-public class NotDefaultConstructorClass {
+public class NotDefaultConstructorClass extends SuperNotDefaultConstructorClass {
 }

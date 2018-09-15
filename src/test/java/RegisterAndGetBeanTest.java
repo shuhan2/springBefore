@@ -10,6 +10,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class RegisterAndGetBeanTest {
 
     @Test
+    void should_create_instance_when_execute_register_and_getBean() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IoCContext context = new IoCContextImpl();
+        context.registerBean(ValidClass.class);
+        ValidClass validClass = context.getBean(ValidClass.class);
+        assertEquals(validClass.getClass(),ValidClass.class);
+    }
+
+    @Test
     void should_throw_IllegalArgumentException_with_message_when_register_null() {
         IoCContext context = new IoCContextImpl();
         Executable executable = () -> context.registerBean(null);
@@ -28,8 +36,8 @@ class RegisterAndGetBeanTest {
     @Test
     void should_throw_IllegalArgumentException_with_message_when_register_Class_not_have_constructors() {
         IoCContext context = new IoCContextImpl();
-        Executable executable = () -> context.registerBean(AbstractClass.class);
-        assertThrows(IllegalArgumentException.class,executable,AbstractClass.class.getName() + IoCContextImpl.HAS_NO_DEFAULT_CONSTRUCTOR);
+        Executable executable = () -> context.registerBean(NotDefaultConstructorClass.class);
+        assertThrows(IllegalArgumentException.class,executable,NotDefaultConstructorClass.class.getName() + IoCContextImpl.HAS_NO_DEFAULT_CONSTRUCTOR);
 
     }
     @Test
