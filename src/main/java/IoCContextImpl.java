@@ -3,31 +3,48 @@ import java.util.List;
 
 import static java.lang.reflect.Modifier.ABSTRACT;
 
-public class IoCContextImpl implements IoCContext {
+public class IoCContextImpl implements IoCContext,Cloneable {
     static final String BEAN_CLAZZ_IS_MANDATORY = "beanClazz is mandatory";
     static final String IS_ABSTRACT = " is abstract";
     static final String HAS_NO_DEFAULT_CONSTRUCTOR = " has no default constructor.";
-    static List<Class> classList = new ArrayList<>();
+    private static final String HAS_STARTED_TO_GET_BEAN = "has started to getBean";
+    static List<Class> registerList = new ArrayList<>();
+    private static List<Class> getBeanList = new ArrayList<>();
     @Override
-    public void registerBean(Class<?> beanClazz) throws NoSuchMethodException, SecurityException  {
+    public void registerBean(Class<?> beanClazz) throws NoSuchMethodException {
         if (beanClazz == null ) {
             throw new IllegalArgumentException(BEAN_CLAZZ_IS_MANDATORY);
         } else if (beanClazz.getModifiers()  == ABSTRACT) {
             throw new IllegalArgumentException(beanClazz.getName() + IS_ABSTRACT);
-        } else if (beanClazz.getConstructor() == null) {
+        } else if (beanClazz.getDeclaredConstructor() == null) {
             throw new IllegalArgumentException(beanClazz.getName() + HAS_NO_DEFAULT_CONSTRUCTOR);
-        } else if (classList.indexOf(beanClazz)  > -1){
-
-        } else {
-           classList.add(beanClazz);
+        } else if (getBeanList.indexOf(beanClazz) > -1) {
+            throw new IllegalStateException(beanClazz.getName() + HAS_STARTED_TO_GET_BEAN);
+        } else if (registerList.indexOf(beanClazz)  > -1){
+            return;
+        }else {
+            registerList.add(beanClazz);
         }
     }
 
     @Override
-    public <T> T getBean(Class<T> resolveClazz) {
+    public <T> T getBean(Class<T> resolveClazz)  {
+        getBeanList.add(resolveClazz);
         if (resolveClazz == null){
-            throw new IllegalArgumentException();
+            throw new IllegalStateException(BEAN_CLAZZ_IS_MANDATORY);
         }
-        return null;
+        if (registerList.indexOf(resolveClazz) < 0) {
+            throw new IllegalStateException(BEAN_CLAZZ_IS_MANDATORY);
+        }
+        Object instance = null;
+        try {
+            instance = resolveClazz.newInstance();
+        } catch (InstantiationException exception) {
+
+        } catch (IllegalAccessException exception) {
+
+        }
+
+        return (T) instance;
     }
 }
