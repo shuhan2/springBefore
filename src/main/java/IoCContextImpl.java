@@ -1,3 +1,4 @@
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,20 +12,32 @@ public class IoCContextImpl implements IoCContext,Cloneable {
     static List<Class> registerList = new ArrayList<>();
     private static List<Class> getBeanList = new ArrayList<>();
     @Override
-    public void registerBean(Class<?> beanClazz) throws NoSuchMethodException {
+    public void registerBean(Class<?> beanClazz)  {
         if (beanClazz == null ) {
             throw new IllegalArgumentException(BEAN_CLAZZ_IS_MANDATORY);
-        } else if (beanClazz.getModifiers()  == ABSTRACT) {
+        }
+        if (beanClazz.isInterface() || Modifier.isAbstract(beanClazz.getModifiers())) {
             throw new IllegalArgumentException(beanClazz.getName() + IS_ABSTRACT);
-        } else if (beanClazz.getDeclaredConstructor() == null) {
-            throw new IllegalArgumentException(beanClazz.getName() + HAS_NO_DEFAULT_CONSTRUCTOR);
-        } else if (getBeanList.indexOf(beanClazz) > -1) {
+        }
+        try {
+            if (beanClazz.getDeclaredConstructor() == null) {
+                throw new IllegalArgumentException(beanClazz.getName() + HAS_NO_DEFAULT_CONSTRUCTOR);
+            }
+        } catch (NoSuchMethodException exception) {
+            exception.printStackTrace();
+        }
+
+        if (getBeanList.indexOf(beanClazz) > -1) {
             throw new IllegalStateException(beanClazz.getName() + HAS_STARTED_TO_GET_BEAN);
-        } else if (registerList.indexOf(beanClazz)  > -1){
-            return;
-        }else {
+        }
+        if (registerList.indexOf(beanClazz)  <0){
             registerList.add(beanClazz);
         }
+    }
+
+    @Override
+    public <T> void registerBean(Class<? super T> resolveClazz, Class<T> beanClazz)  {
+
     }
 
     @Override
