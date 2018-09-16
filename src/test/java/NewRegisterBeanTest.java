@@ -2,13 +2,14 @@ import TestClass.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
+import java.lang.annotation.Annotation;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class NewRegisterBeanTest {
+
+
     @Test
     void should_throw_IllegalArgumentException_when_register_null() {
         IoCContextImpl context = new IoCContextImpl();
@@ -31,9 +32,9 @@ class NewRegisterBeanTest {
         IoCContext context = new IoCContextImpl();
         try {
             context.registerBean(SuperValidClass.class,ValidClass.class);
-            int beforeLength = IoCContextImpl.registerList.size();
+            int beforeLength = IoCContextImpl.registerMap.size();
             context.registerBean(SuperValidClass.class,ValidClass.class);
-            int afterLength = IoCContextImpl.registerList.size();
+            int afterLength = IoCContextImpl.registerMap.size();
             assertEquals(beforeLength,afterLength);
             assertDoesNotThrow(() -> {context.registerBean(SuperValidClass.class,ValidClass.class);
                 context.registerBean(SuperValidClass.class,ValidClass.class);});
@@ -50,4 +51,22 @@ class NewRegisterBeanTest {
 
     }
 
+    @Test
+    void should_create_instance_when_execute_register_and_getBean() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IoCContext context = new IoCContextImpl();
+        context.registerBean(SuperValidClass.class,ValidClass.class);
+        SuperValidClass validClass = context.getBean(SuperValidClass.class);
+        assertEquals(validClass.getClass(),SuperValidClass.class);
+    }
+
+    @Test
+    void should_override_previous_instance_when_register_same_resolveClazz() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
+        IoCContext context = new IoCContextImpl();
+        context.registerBean(SuperValidClass.class,ValidClass.class);
+        context.registerBean(SuperValidClass.class,AnotherValidClass.class);
+
+        SuperValidClass instance = context.getBean(SuperValidClass.class);
+
+        assertEquals(instance.getClass(), AnotherValidClass.class);
+    }
 }

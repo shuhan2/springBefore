@@ -1,16 +1,16 @@
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import static java.lang.reflect.Modifier.ABSTRACT;
+import java.util.Map;
 
 public class IoCContextImpl implements IoCContext,Cloneable {
     static final String BEAN_CLAZZ_IS_MANDATORY = "beanClazz is mandatory";
     static final String IS_ABSTRACT = " is abstract";
     static final String HAS_NO_DEFAULT_CONSTRUCTOR = " has no default constructor.";
     private static final String HAS_STARTED_TO_GET_BEAN = "has started to getBean";
-    static List<Class> registerList = new ArrayList<>();
-    private static List<Class> getBeanList = new ArrayList<>();
+    static Map<Class,Class> registerMap = new HashMap<>();
+    private static List<Class> getBeanMap = new ArrayList<>();
     @Override
     public void registerBean(Class<?> beanClazz)  {
         if (beanClazz == null ) {
@@ -26,11 +26,11 @@ public class IoCContextImpl implements IoCContext,Cloneable {
 
         }
 
-        if (getBeanList.indexOf(beanClazz) > -1) {
+        if (getBeanMap.indexOf(beanClazz) >-1) {
             throw new IllegalStateException(beanClazz.getName() + HAS_STARTED_TO_GET_BEAN);
         }
-        if (registerList.indexOf(beanClazz)  <0){
-            registerList.add(beanClazz);
+        if (!registerMap.containsKey(beanClazz)){
+            registerMap.put(beanClazz,beanClazz);
         }
     }
 
@@ -49,21 +49,23 @@ public class IoCContextImpl implements IoCContext,Cloneable {
             throw new IllegalArgumentException(beanClazz.getName() + HAS_NO_DEFAULT_CONSTRUCTOR);
         }
 
-
+        if (!registerMap.containsKey(beanClazz)){
+            registerMap.put(resolveClazz,beanClazz);
+        }
     }
 
     @Override
     public <T> T getBean(Class<T> resolveClazz)  {
-        getBeanList.add(resolveClazz);
+        getBeanMap.add(registerMap.get(resolveClazz));
         if (resolveClazz == null){
             throw new IllegalStateException(BEAN_CLAZZ_IS_MANDATORY);
         }
-        if (registerList.indexOf(resolveClazz) < 0) {
+        if (!registerMap.containsKey(resolveClazz)) {
             throw new IllegalStateException(BEAN_CLAZZ_IS_MANDATORY);
         }
         Object instance = null;
         try {
-            instance = resolveClazz.newInstance();
+            instance = registerMap.get(resolveClazz).newInstance();
         } catch (InstantiationException exception) {
 
         } catch (IllegalAccessException exception) {
@@ -72,4 +74,6 @@ public class IoCContextImpl implements IoCContext,Cloneable {
 
         return (T) instance;
     }
+
+
 }

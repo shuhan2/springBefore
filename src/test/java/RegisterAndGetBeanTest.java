@@ -45,9 +45,9 @@ class RegisterAndGetBeanTest {
         IoCContext context = new IoCContextImpl();
         try {
             context.registerBean(ValidClass.class);
-            int beforeLength = IoCContextImpl.registerList.size();
+            int beforeLength = IoCContextImpl.registerMap.size();
             context.registerBean(ValidClass.class);
-            int afterLength = IoCContextImpl.registerList.size();
+            int afterLength = IoCContextImpl.registerMap.size();
             assertEquals(beforeLength,afterLength);
             assertDoesNotThrow(() -> {context.registerBean(ValidClass.class);
             context.registerBean(ValidClass.class);});
