@@ -67,17 +67,17 @@ public class IoCContextImpl implements IoCContext,Cloneable {
         return createInstance(resolveClazz);
     }
 
-    public <T> T createInstance(Class<T> resolveClazz) throws IllegalAccessException {
+    private <T> T createInstance(Class<T> resolveClazz) throws IllegalAccessException {
         Object instance = null;
         try {
             instance = registerMap.get(resolveClazz).newInstance();
         } catch (InstantiationException exception) {
-
+            exception.printStackTrace();
         } catch (IllegalAccessException exception) {
-
+            exception.printStackTrace();
         }
         for (Field declaredField : resolveClazz.getDeclaredFields()) {
-
+            declaredField.setAccessible(true);
             Class<?> type = declaredField.getType();
             if (!registerMap.containsKey(type)) {
                 throw new IllegalStateException();
