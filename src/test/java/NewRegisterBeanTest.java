@@ -2,7 +2,6 @@ import TestClass.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
-import java.lang.annotation.Annotation;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +27,7 @@ class NewRegisterBeanTest {
     }
 
     @Test
-    void should_throw_IllegalArgumentException_when_register_not_have_constructors() {
+    void should_return_when_register_class_has_been_registered() {
         IoCContext context = new IoCContextImpl();
         try {
             context.registerBean(SuperValidClass.class,ValidClass.class);
@@ -44,23 +43,23 @@ class NewRegisterBeanTest {
     }
 
     @Test
-    void should_return_when_register_class_has_been_registered() {
+    void should_throw_IllegalArgumentException_when_register_not_have_constructors() {
         IoCContextImpl context = new IoCContextImpl();
-        Executable executable = () -> context.registerBean(SuperValidClass.class, ValidClass.class);
+        Executable executable = () -> context.registerBean(SuperNotDefaultConstructorClass.class, NotDefaultConstructorClass.class);
         assertThrows(IllegalArgumentException.class , executable,AnotherAbstractClass.class.getName() + IoCContextImpl.HAS_NO_DEFAULT_CONSTRUCTOR);
 
     }
 
     @Test
-    void should_create_instance_when_execute_register_and_getBean() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
+    void should_create_instance_when_execute_register_and_getBean() throws Exception {
         IoCContext context = new IoCContextImpl();
         context.registerBean(SuperValidClass.class,ValidClass.class);
         SuperValidClass validClass = context.getBean(SuperValidClass.class);
-        assertEquals(validClass.getClass(),SuperValidClass.class);
+        assertEquals(ValidClass.class,validClass.getClass());
     }
 
     @Test
-    void should_override_previous_instance_when_register_same_resolveClazz() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
+    void should_override_previous_instance_when_register_same_resolveClazz() throws Exception {
         IoCContext context = new IoCContextImpl();
         context.registerBean(SuperValidClass.class,ValidClass.class);
         context.registerBean(SuperValidClass.class,AnotherValidClass.class);

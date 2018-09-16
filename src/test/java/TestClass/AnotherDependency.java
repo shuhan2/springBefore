@@ -1,11 +1,10 @@
 package TestClass;
 
+import Annotation.CreateOnFly;
+
 import java.util.Date;
 
-public class MyDependency implements AutoCloseable {
-    public MyDependency() {
-
-    }
+public class AnotherDependency implements AutoCloseable{
     private Date time;
     private boolean isClosed;
 
@@ -17,6 +16,7 @@ public class MyDependency implements AutoCloseable {
     }
     @Override
     public void close() throws Exception {
+
         time = new Date();
         isClosed = true;
 
@@ -24,4 +24,3 @@ public class MyDependency implements AutoCloseable {
 
     }
 }
-

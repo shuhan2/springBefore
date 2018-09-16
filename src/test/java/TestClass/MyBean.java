@@ -1,5 +1,7 @@
 package TestClass;
 
+import Annotation.CreateOnFly;
+
 public class MyBean extends SuperMyBean {
     @CreateOnFly
     private MyDependency myDependency;

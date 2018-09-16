@@ -1,15 +1,21 @@
 package TestClass;
 
-public class SuperMyBean {
+import Annotation.CreateOnFly;
+
+public class SuperMyBean implements AutoCloseable {
     public SuperMyDependency getSuperMyDependency() {
         return superMyDependency;
     }
 
-    SuperMyBean() {
+    public SuperMyBean() {
     }
 
     @CreateOnFly
     private SuperMyDependency superMyDependency;
 
 
+    @Override
+    public void close() throws Exception {
+
+    }
 }

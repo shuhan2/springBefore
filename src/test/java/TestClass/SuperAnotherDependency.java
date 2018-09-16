@@ -2,10 +2,7 @@ package TestClass;
 
 import java.util.Date;
 
-public class MyDependency implements AutoCloseable {
-    public MyDependency() {
-
-    }
+public class SuperAnotherDependency implements AutoCloseable{
     private Date time;
     private boolean isClosed;
 
@@ -22,6 +19,6 @@ public class MyDependency implements AutoCloseable {
 
         Thread.sleep(10);
 
+        throw new IllegalArgumentException();
     }
 }
-
