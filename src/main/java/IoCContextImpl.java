@@ -1,3 +1,4 @@
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +56,7 @@ public class IoCContextImpl implements IoCContext,Cloneable {
     }
 
     @Override
-    public <T> T getBean(Class<T> resolveClazz)  {
+    public <T> T getBean(Class<T> resolveClazz) throws IllegalAccessException {
         getBeanMap.add(registerMap.get(resolveClazz));
         if (resolveClazz == null){
             throw new IllegalStateException(BEAN_CLAZZ_IS_MANDATORY);
@@ -63,6 +64,10 @@ public class IoCContextImpl implements IoCContext,Cloneable {
         if (!registerMap.containsKey(resolveClazz)) {
             throw new IllegalStateException(BEAN_CLAZZ_IS_MANDATORY);
         }
+        return createInstance(resolveClazz);
+    }
+
+    public <T> T createInstance(Class<T> resolveClazz) throws IllegalAccessException {
         Object instance = null;
         try {
             instance = registerMap.get(resolveClazz).newInstance();
@@ -71,9 +76,18 @@ public class IoCContextImpl implements IoCContext,Cloneable {
         } catch (IllegalAccessException exception) {
 
         }
+        for (Field declaredField : resolveClazz.getDeclaredFields()) {
 
+            Class<?> type = declaredField.getType();
+            if (!registerMap.containsKey(type)) {
+                throw new IllegalStateException();
+            }
+            declaredField.set(instance,getBean(type));
+
+        }
         return (T) instance;
     }
+
 
 
 }
